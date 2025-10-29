@@ -1,19 +1,17 @@
-```markdown
-# Title: [A short, descriptive title for the decision]
+# Title: [Concise decision summary]
 
 **Status:** [Proposed | Accepted | Deprecated | Superseded]
 
 ## Context
-- Problem: [Describe the problem.]
-- Driving forces: [Key goals, quality attributes, stakeholders, deadlines.]
-- Constraints: [Technical, organizational, legal, budget, legacy, etc.]
+- Problem: [Describe the business or technical problem this decision addresses.]
+- Driving forces: [List goals, quality attributes, stakeholder needs, timelines.]
+- Constraints: [Note regulatory, architectural, budget, or operational limits.]
 
 ## Decision
-- [State the chosen solution clearly and concisely.]
-- Rationale: [Why this option over others; key trade-offs considered.]
+- Summary: [State the chosen solution clearly.]
+- Rationale: [Explain why this option was selected over the alternatives.]
 
 ## Consequences
-- Positive outcomes: [Benefits and desired results.]
-- Negative trade-offs: [Costs, risks, compromises, new limitations.]
-- Future work: [Follow-ups, migration/cleanup tasks, monitoring, review date.]
-```
+- Positive outcomes: [Highlight expected benefits and strengths.]
+- Negative trade-offs: [Capture risks, costs, or limitations introduced.]
+- Future work: [Document follow-up tasks, monitoring items, review date.]
