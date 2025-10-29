@@ -1,0 +1,194 @@
+[
+    {
+        "id": 1,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Digital Paperwork Hub",
+        "user_story": "As a new hire, I want to complete and submit all my required paperwork digitally so that I can finish my pre-start tasks efficiently from anywhere.",
+        "acceptance_criteria": [
+            "I can view a list of all required documents and their status (e.g., Not Started, Complete).",
+            "I can upload files or fill out and digitally sign forms directly in the tool.",
+            "The system confirms when all paperwork has been successfully submitted."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 2,
+        "persona": "David Miller \u2014 HR/Enablement Specialist",
+        "feature": "Digital Paperwork Hub",
+        "user_story": "As an HR specialist, I want to track the paperwork submission status for all new hires so that I can ensure compliance before their start date.",
+        "acceptance_criteria": [
+            "The dashboard shows a list of new hires and their paperwork status (Incomplete, Submitted, Approved).",
+            "I can filter the list by start date, department, or manager.",
+            "I can send a reminder notification to a new hire with incomplete paperwork."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 3,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Personalized 90-Day Onboarding Plan",
+        "user_story": "As a new hire, I want a clear, personalized 90-day plan with milestones so that I understand what is expected of me and how to succeed in my new role.",
+        "acceptance_criteria": [
+            "The plan is broken down into 30, 60, and 90-day phases.",
+            "Each task or milestone can be marked as complete.",
+            "I can view resources or contacts linked to specific tasks."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 4,
+        "persona": "Maria Garcia \u2014 Hiring Manager",
+        "feature": "Personalized 90-Day Onboarding Plan",
+        "user_story": "As a hiring manager, I want to customize a 90-day onboarding plan from a template so that I can provide role-specific guidance for my new hire.",
+        "acceptance_criteria": [
+            "I can select a role-based template to start the plan.",
+            "I can add, edit, or remove tasks and milestones from the template.",
+            "The plan is automatically shared with my new hire upon their start date."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 5,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "IT & Systems Setup Guide",
+        "user_story": "As a new hire, I want a step-by-step guide for setting up my accounts and hardware so that I can become productive as quickly as possible.",
+        "acceptance_criteria": [
+            "The guide lists all required systems with links to access them.",
+            "Each step includes clear instructions and expected outcomes.",
+            "I can check off each setup task as I complete it."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 6,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Compliance Training Hub & Tracker",
+        "user_story": "As a new hire, I want a central place to access and complete all my mandatory compliance training so that I can meet company requirements on time.",
+        "acceptance_criteria": [
+            "The hub displays a list of all assigned training modules.",
+            "Each module shows a due date and its completion status.",
+            "Upon completing a module, my training record is automatically updated."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 7,
+        "persona": "Maria Garcia \u2014 Hiring Manager",
+        "feature": "30-60-90 Day Goal Setting Module",
+        "user_story": "As a hiring manager, I want to collaboratively set and track 30-60-90 day goals with my new hire so that we have a shared understanding of success.",
+        "acceptance_criteria": [
+            "I can propose goals for my new hire within the module.",
+            "The new hire can comment on or suggest edits to the proposed goals.",
+            "I can mark goals as 'Approved' once we have aligned."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 8,
+        "persona": "David Miller \u2014 HR/Enablement Specialist",
+        "feature": "Manager & HR Analytics Dashboard",
+        "user_story": "As an HR specialist, I want to view an analytics dashboard on onboarding progress across the company so that I can identify bottlenecks and improve the overall program.",
+        "acceptance_criteria": [
+            "The dashboard displays key metrics like average time-to-complete for key tasks.",
+            "I can filter data by department, role, or hiring manager.",
+            "The dashboard highlights new hires who are falling behind on their plan."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 9,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Smart Notifications",
+        "user_story": "As a new hire, I want to receive timely notifications about upcoming deadlines or new tasks so that I can stay on track with my onboarding.",
+        "acceptance_criteria": [
+            "I receive a notification 24 hours before a task is due.",
+            "I receive a notification when my manager adds a new item to my plan.",
+            "I can manage my notification preferences (e.g., email, in-app)."
+        ],
+        "priority": "High"
+    },
+    {
+        "id": 10,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "\u201cYour First Week\u201d Agenda",
+        "user_story": "As a new hire, I want a clear agenda for my first week so that I know where I need to be and who I'll be meeting.",
+        "acceptance_criteria": [
+            "The agenda is displayed in a calendar or timeline view.",
+            "Each event includes the time, location (or video link), and attendees.",
+            "I can add the agenda to my personal work calendar (e.g., Google Calendar, Outlook)."
+        ],
+        "priority": "Medium"
+    },
+    {
+        "id": 11,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "\u201cWho to Know\u201d Org Navigator",
+        "user_story": "As a new hire, I want an interactive guide to key people in the organization so that I can understand who to contact for different needs.",
+        "acceptance_criteria": [
+            "The navigator shows my direct team, key cross-functional partners, and leadership.",
+            "Each person's profile includes their photo, role, and a brief 'what I do' description.",
+            "I can click a profile to see their position in the org chart."
+        ],
+        "priority": "Medium"
+    },
+    {
+        "id": 12,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Automated \u201cBuddy\u201d Matching & Intro",
+        "user_story": "As a new hire, I want to be automatically matched with an onboarding 'buddy' so that I have a friendly point of contact for informal questions.",
+        "acceptance_criteria": [
+            "I receive an introduction to my buddy via the tool on my first day.",
+            "The introduction includes my buddy's contact information and some fun facts.",
+            "The system suggests a first coffee chat or meeting."
+        ],
+        "priority": "Medium"
+    },
+    {
+        "id": 13,
+        "persona": "Maria Garcia \u2014 Hiring Manager",
+        "feature": "Automated Manager Welcome Nudge",
+        "user_story": "As a hiring manager, I want a reminder before my new hire's start date to prepare their welcome experience so that they feel expected and valued from day one.",
+        "acceptance_criteria": [
+            "A notification is sent to me 3 days before the new hire's start date.",
+            "The notification includes a checklist of suggested prep tasks (e.g., schedule 1:1, prepare welcome kit).",
+            "I can mark the tasks as complete directly from the notification."
+        ],
+        "priority": "Medium"
+    },
+    {
+        "id": 14,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Role-Specific Knowledge Base",
+        "user_story": "As a new hire, I want access to a curated knowledge base for my specific role so that I can find relevant documents and best practices independently.",
+        "acceptance_criteria": [
+            "The knowledge base is searchable by keyword.",
+            "Content is organized by topics relevant to my role (e.g., 'Codebase Overview', 'Sales Playbook').",
+            "I can bookmark articles for quick access later."
+        ],
+        "priority": "Medium"
+    },
+    {
+        "id": 15,
+        "persona": "Maria Garcia \u2014 Hiring Manager",
+        "feature": "Automated Check-in Prompts",
+        "user_story": "As a hiring manager, I want to receive automated prompts to schedule check-ins with my new hire so that I can provide consistent support and feedback.",
+        "acceptance_criteria": [
+            "The system prompts me to schedule check-ins at the 1-week, 30-day, 60-day, and 90-day marks.",
+            "Each prompt includes a link to the new hire's progress and suggested talking points.",
+            "The system recognizes if a check-in is already on our calendars and does not send a redundant prompt."
+        ],
+        "priority": "Medium"
+    },
+    {
+        "id": 16,
+        "persona": "Alex Chen \u2014 New Hire",
+        "feature": "Mobile-Responsive Interface",
+        "user_story": "As a new hire, I want to access my onboarding plan on my mobile device so that I can check tasks and my schedule on the go.",
+        "acceptance_criteria": [
+            "All core features are usable on a standard mobile browser (Chrome, Safari).",
+            "Text is readable and buttons are tappable without needing to zoom.",
+            "Navigation is adapted for a small screen (e.g., hamburger menu)."
+        ],
+        "priority": "Medium"
+    }
+]

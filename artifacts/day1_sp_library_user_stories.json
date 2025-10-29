@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "persona": "Casual Reader",
+    "user_story": "As a Casual Reader, I want to scan the barcode of a book to add it to my borrowed list, so that I can easily track which books I have borrowed.",
+    "acceptance_criteria": [
+      "Given the app is open, When I scan a book's barcode, Then the book is added to my borrowed list.",
+      "Given a book is added to my borrowed list, When I view my borrowed books, Then I see the book details including title and author."
+    ]
+  },
+  {
+    "id": 2,
+    "persona": "Student",
+    "user_story": "As a Student, I want to receive reminders for due dates of borrowed books, so that I can return them on time and avoid late fees.",
+    "acceptance_criteria": [
+      "Given I have borrowed books, When a book's due date is approaching, Then I receive a notification reminder.",
+      "Given a book is overdue, When I open the app, Then I see an alert indicating the overdue status."
+    ]
+  },
+  {
+    "id": 3,
+    "persona": "Parent",
+    "user_story": "As a Parent, I want to manage multiple library accounts for my family, so that I can track borrowed books for each family member.",
+    "acceptance_criteria": [
+      "Given I have multiple accounts linked, When I switch accounts, Then I see the borrowed books for the selected account.",
+      "Given I am managing multiple accounts, When I add a book to a specific account, Then it is only visible under that account's borrowed list."
+    ]
+  },
+  {
+    "id": 4,
+    "persona": "Casual Reader",
+    "user_story": "As a Casual Reader, I want to receive personalized book recommendations, so that I can discover new books that match my interests.",
+    "acceptance_criteria": [
+      "Given I have borrowed books, When I view recommendations, Then I see a list of books based on my borrowing history.",
+      "Given I have rated books, When I view recommendations, Then the recommendations are influenced by my ratings."
+    ]
+  },
+  {
+    "id": 5,
+    "persona": "Student",
+    "user_story": "As a Student, I want to search for books by title or author, so that I can easily find books I am interested in borrowing.",
+    "acceptance_criteria": [
+      "Given the app is open, When I enter a title or author in the search bar, Then I see a list of books matching the search criteria.",
+      "Given search results are displayed, When I select a book, Then I see detailed information about the book."
+    ]
+  },
+  {
+    "id": 6,
+    "persona": "Parent",
+    "user_story": "As a Parent, I want to set reading goals for my children, so that I can encourage them to read more.",
+    "acceptance_criteria": [
+      "Given I have set a reading goal, When I view my child's account, Then I see the progress towards the goal.",
+      "Given a reading goal is set, When a book is marked as read, Then the progress towards the goal is updated."
+    ]
+  }
+]
