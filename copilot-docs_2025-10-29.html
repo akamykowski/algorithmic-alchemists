@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copilot Tips: Using Up-to-Date Docs in Cursor & Copilot Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #1a202c; color: #e2e8f0; }
+        .section-title { position: relative; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .section-title::after { content: ''; position: absolute; left: 0; bottom: 0; width: 50px; height: 3px; background-color: #63b3ed; border-radius: 9999px; }
+        .card { background-color: #2d3748; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .collapsible-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; font-weight: 600; color: #90cdf4; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .collapsible-content.open { max-height: 2000px; transition: max-height 0.5s ease-in; }
+        .code-block { background-color: #232d3a; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; font-family: 'Fira Code','Cascadia Code', monospace; font-size: 0.9em; color: #a0aec0; }
+        .highlight { color: #4fd1c5; }
+        .accent-text { color: #63b3ed; }
+        .syntax-list { list-style-type: none; padding-left: 0; }
+        .syntax-list li { position: relative; padding-left: 1.5em; margin-bottom: 0.5em; }
+        .syntax-list li::before { content: '›'; position: absolute; left: 0; color: #4fd1c5; font-weight: bold; }
+        .small { font-size: 0.9rem; color: #a0aec0; }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="bg-gray-800 p-4 sticky top-0 z-50 shadow-xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-white"><span class="accent-text">AI-Driven</span> SWE Program</h1>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#intro" class="text-gray-300 hover:text-white transition duration-300">Intro</a></li>
+                    <li><a href="#copilot" class="text-gray-300 hover:text-white transition duration-300">Copilot Chat</a></li>
+                    <li><a href="#cursor" class="text-gray-300 hover:text-white transition duration-300">Cursor</a></li>
+                    <li><a href="#extras" class="text-gray-300 hover:text-white transition duration-300">Context7 & Refs</a></li>
+                    <li><a href="#demo" class="text-gray-300 hover:text-white transition duration-300">Demo Flow</a></li>
+                    <li><a href="#cheatsheet" class="text-gray-300 hover:text-white transition duration-300">Cheatsheet</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6">
+        <section id="intro" class="text-center my-10">
+            <h2 class="text-5xl font-extrabold text-white mb-4">Copilot Tips: Using Up-to-Date Docs in Cursor & Copilot Chat</h2>
+            <p class="text-xl text-gray-400">
+                <span class="accent-text">Goal (10–15 min):</span> Master practical ways to access fresh, trustworthy documentation without leaving your IDE.
+            </p>
+            <p class="text-lg text-gray-400 mt-2">
+                Focus on VS Code GitHub Copilot Chat (built-in), Cursor <span class="highlight">@docs</span>, and optional ref/context tools.
+            </p>
+            <p class="text-sm text-gray-500 mt-4">
+                Last Updated: October 29, 2025
+            </p>
+        </section>
+
+        <!-- GitHub Copilot Chat (VS Code) -->
+        <section id="copilot" class="my-12 card">
+            <h3 class="text-3xl font-bold section-title">GitHub Copilot Chat (VS Code): Built-in Documentation Access</h3>
+            <p class="text-gray-300 mb-4">
+                As of <span class="highlight">October 29, 2025</span>, VS Code Copilot Chat provides powerful built-in ways to access current documentation and code references:
+            </p>
+
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">1. Commands for Documentation</h4>
+                <ul class="syntax-list">
+                    <li><span class="highlight">Generate Docs:</span> Use <span class="highlight">Inline Chat (Cmd+I or Ctrl+I)</span> on a function or class, or use the <span class="highlight">sparkle icon (Code Actions)</span> and select "Generate Docs".</li>
+                    <li><span class="highlight">/explain</span> - Get explanations for selected code with context.</li>
+                    <li><span class="highlight">/fix</span> - Fix issues with code and explain the solution.</li>
+                    <li><span class="highlight">/tests</span> - Generate unit tests with documentation.</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">2. Context Variables (# tags)</h4>
+                <ul class="syntax-list">
+                    <li><span class="highlight">#file</span> - Reference a specific file. Type <code>#</code> to get file name suggestions</li>
+                    <li><span class="highlight">#editor</span> - Include the visible code in the active editor</li>
+                    <li><span class="highlight">#selection</span> - Focus on currently selected code</li>
+                    <li><span class="highlight">#function</span> - Include the current function or method</li>
+                    <li><span class="highlight">#codebase</span> - Perform a code search in workspace for relevant context</li>
+                </ul>
+                <div class="collapsible-container mt-4">
+                    <div class="collapsible-header">
+                        <span>Example Prompts with Context Variables</span>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="code-block"><pre><code>#file:package.json Can you suggest improvements and cite any best practices docs?
+
+#function Generate JSDoc comments for this function with parameter descriptions
+
+#selection Explain this code and link to relevant MDN documentation
+
+#codebase How do we handle JWT validation? Cite any external docs used.
+</code></pre></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">3. Chat Participants (@ mentions)</h4>
+                <ul class="syntax-list">
+                    <li><span class="highlight">@vscode</span> - Ask about VS Code features and commands. Example: <code>@vscode How do I enable word wrapping?</code></li>
+                    <li><span class="highlight">@workspace</span> - Get context about code in your workspace</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">4. File Attachments & Drag-and-Drop</h4>
+                <ul class="syntax-list">
+                    <li>Use the <span class="highlight">paperclip icon</span> in Chat to attach files/folders</li>
+                    <li><span class="highlight">Drag files</span> from Explorer or editor tabs directly into chat</li>
+                    <li>Type <code>#</code> in chat input to quickly attach files by name</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">5. Public Code Matching & Citations</h4>
+                <ul class="syntax-list">
+                    <li>When enabled, Copilot may show <span class="highlight">"View matches"</span> links to publicly available code on GitHub</li>
+                    <li>Look for inline citations and links to official docs (MDN, Microsoft Learn, etc.)</li>
+                    <li>Click citation links to verify information directly from source</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">6. Inline Chat & Code Actions</h4>
+                <ul class="syntax-list">
+                    <li>Press <code>Ctrl+I</code> (Win/Linux) or <code>Cmd+I</code> (Mac) for inline chat on selected code</li>
+                    <li>Use <span class="highlight">sparkle Code Action</span> (light bulb) to explain code or generate docs directly in editor</li>
+                    <li>Ask "Explain this code" or "Update documentation" directly on the line</li>
+                </ul>
+            </div>
+
+            <p class="small mt-4">
+                <span class="highlight">Note:</span> Citation features and web grounding availability may vary by VS Code version, Copilot license tier, and organizational settings. If citations aren't visible, explicitly ask: "Provide this answer with links to official documentation."
+            </p>
+        </section>
+
+        <!-- Cursor @docs -->
+        <section id="cursor" class="my-12 card">
+            <h3 class="text-3xl font-bold section-title">Cursor: Using <span class="highlight">@docs</span> for Live Documentation</h3>
+            <p class="text-gray-300 mb-4">
+                Cursor's <code>@docs</code> command lets you query official documentation directly from chat, fetching, summarizing, and linking sources for quick verification.
+            </p>
+            <ul class="syntax-list">
+                <li><span class="highlight">Targeted lookups:</span> Type <code>@docs</code> followed by a topic, package, or API name. Specify versions when needed for accuracy.</li>
+                <li><span class="highlight">Grounding with sources:</span> Ask Cursor to output links and quote relevant passages from the official docs.</li>
+                <li><span class="highlight">Side-by-side comparisons:</span> Request comparisons across versions or frameworks with inline citations.</li>
+            </ul>
+            <div class="collapsible-container mt-4">
+                <div class="collapsible-header">
+                    <span>Effective @docs Prompts</span>
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="code-block"><pre><code>@docs "react router data routers v6.27" show migration steps from loaders/actions; include links.
+
+@docs "fastapi background tasks" provide minimal example and official reference.
+
+@docs "kubernetes ingress nginx annotations" summarize common settings; link to upstream docs.
+
+@docs "node 22 fs api vs node 20" what changed? cite documentation URLs.
+</code></pre></div>
+                </div>
+            </div>
+            <p class="small mt-4">
+                <span class="highlight">Tip:</span> If @docs returns generic info, narrow your scope by adding version numbers, exact API names, or paste a specific documentation URL and ask for a grounded summary of that page only.
+            </p>
+        </section>
+
+        <!-- Context7 & Refs -->
+        <section id="extras" class="my-12 card">
+            <h3 class="text-3xl font-bold section-title">Optional: Context7 and "ref" style tools</h3>
+            <p class="text-gray-300 mb-4">Add tool-integrations that fetch official docs and ground answers with citations.</p>
+            <ul class="syntax-list">
+                <li><span class="highlight">Context7 doc lookups:</span> resolve a library and fetch focused docs/examples.</li>
+                <li><span class="highlight">Ref-only answers:</span> require quoting from linked sources; reject unsourced claims.</li>
+            </ul>
+            <div class="collapsible-container mt-4">
+                <div class="collapsible-header">
+                    <span>Prompts (tool-integrated chats)</span>
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="code-block"><pre><code>#resolve-library-id react
+#get-library-docs /vercel/next.js routing - cite sections and link URLs.
+
+Only answer using the fetched docs; if unknown, say so.
+</code></pre></div>
+                    <p class="small mt-2">Note: These hashtags are examples for tool-enabled chat setups (e.g., MCP-integrated assistants). They are <span class="highlight">not</span> built-in Copilot Chat commands. Ensure the Context7 tool is configured; otherwise, paste official URLs and ask for grounded summaries.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Demo Flow -->
+        <section id="demo" class="my-12 card">
+            <h3 class="text-3xl font-bold section-title">Live Demo Flow (7–10 min)</h3>
+            <p class="text-gray-300 mb-4">
+                Follow this sequence to show students practical documentation access in real time:
+            </p>
+            <ol class="syntax-list">
+                <li><span class="highlight">Copilot Slash Command:</span> Open a function, type <code>/docs</code> in chat, and watch it generate JSDoc comments. Show how to accept/edit the output.</li>
+                <li><span class="highlight">Context Variables:</span> Select a code block, use <code>#selection Explain this and cite MDN docs</code>. Point out any citation links that appear.</li>
+                <li><span class="highlight">File Attachment:</span> Drag <code>package.json</code> into chat, ask: "Any outdated dependencies? Link to migration guides for major version changes."</li>
+                <li><span class="highlight">@workspace Query:</span> Type <code>@workspace How do we authenticate users?</code> to see codebase-aware answers.</li>
+                <li><span class="highlight">Cursor @docs:</span> Switch to Cursor (if available), query a specific API with version (e.g., <code>@docs "next.js 14 app router"</code>). Show links and quotes.</li>
+                <li><span class="highlight">Verification Step:</span> Click one citation link live and cross-check a claim against the official doc page.</li>
+            </ol>
+            <p class="small mt-4">
+                <span class="highlight">Instructor Tip:</span> If Copilot doesn't show citation links, pivot mid-demo: paste an official URL (e.g., https://react.dev/reference) and ask "Summarize this page and propose changes grounded to the text." This shows the fallback strategy.
+            </p>
+        </section>
+
+        <!-- Quick Cheatsheet -->
+        <section id="cheatsheet" class="my-12 card">
+            <h3 class="text-3xl font-bold section-title">Quick Reference Cheatsheet</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-200 mb-3">VS Code Copilot Chat</h4>
+                    <div class="code-block"><pre><code>Slash Commands:
+/docs - Generate documentation
+/explain - Explain selected code
+/fix - Fix and explain issues
+/tests - Generate unit tests
+
+Context Variables:
+#file - Reference specific file
+#editor - Active editor content
+#selection - Selected code
+#function - Current function
+#codebase - Workspace search
+
+Chat Participants:
+@vscode - VS Code help
+@workspace - Workspace context
+
+Shortcuts:
+Ctrl+I / Cmd+I - Inline chat
+Drag files → Chat - Attach context
+</code></pre></div>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-200 mb-3">Cursor & Context7</h4>
+                    <div class="code-block"><pre><code>Cursor:
+@docs "topic/package v#" - Fetch docs
+Ask for: "include links + quotes"
+Narrow by version and API name
+
+Context7 (tool-integrated):
+#resolve-library-id <name>
+#get-library-docs /<org>/<proj>
+Require citations in prompt
+
+Grounding Prompts:
+"Only answer using linked docs;
+cite each claim with URL.
+If unknown, say so."
+</code></pre></div>
+                </div>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 mt-6">
+                <p class="text-lg font-medium text-white mb-2">Safe Prompting Tips</p>
+                <ul class="syntax-list">
+                    <li><span class="highlight">Always verify:</span> Click citation links and cross-check claims against official sources</li>
+                    <li><span class="highlight">Be specific:</span> Include version numbers, exact API names, and framework details</li>
+                    <li><span class="highlight">Request sources:</span> Explicitly ask "Provide links to official documentation" if not shown</li>
+                    <li><span class="highlight">Fallback strategy:</span> If no citations appear, paste an official doc URL and ask for grounded summary</li>
+                    <li><span class="highlight">Reject unsourced claims:</span> If answer lacks citations for critical info, ask for sources or verify manually</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Wrap-up -->
+        <section id="wrap-up" class="my-12 card">
+            <h3 class="text-3xl font-bold section-title">Wrap-up & Key Takeaways</h3>
+            <ul class="syntax-list">
+                <li>VS Code Copilot Chat offers powerful built-in methods for doc access: <span class="highlight">inline chat, code actions, slash commands, context variables, and citations</span>.</li>
+                <li>Cursor's <span class="highlight">@docs</span> provides fast, version-specific lookups with source links.</li>
+                <li>Context7 and ref tools add advanced grounding for tool-integrated workflows.</li>
+                <li><span class="highlight">Always verify</span> citations and prefer official sources (MDN, Microsoft Learn, vendor docs).</li>
+                <li>Use context variables and file attachments to reduce hallucinations and get precise answers.</li>
+            </ul>
+            <div class="mb-6 mt-6">
+                <h4 class="text-xl font-semibold text-gray-200 mb-2">Latest Enhancements (Oct 2025)</h4>
+                <ul class="syntax-list">
+                    <li><span class="highlight">Automatic Participant Detection:</span> Copilot now intelligently routes questions to the best participant (e.g., `@workspace`, `@vscode`) without you needing to specify it.</li>
+                    <li><span class="highlight">Editor Context Toggle:</span> You now have a setting to control whether your active editor content is automatically included in a chat query.</li>
+                    <li><span class="highlight">Interactive Symbol Links:</span> Workspace symbols (e.g., function or class names) in chat responses are now interactive links to their definitions.</li>
+                </ul>
+            </div>
+            <p class="text-gray-300 mt-6">
+                <span class="font-semibold">Suggested Resources to Reference Live:</span>
+            </p>
+            <ul class="syntax-list">
+                <li>GitHub Copilot Docs: <code>https://docs.github.com/copilot</code></li>
+                <li>VS Code Copilot Features: <code>https://code.visualstudio.com/docs/copilot</code></li>
+                <li>MDN Web Docs: <code>https://developer.mozilla.org</code></li>
+                <li>Microsoft Learn: <code>https://learn.microsoft.com</code></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 p-4 text-center text-gray-400 text-sm">
+        <p>&copy; 2025 Booz Allen Hamilton Inc. All rights reserved.</p>
+        <p class="text-xs mt-1">Copilot Tips | Updated: October 29, 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const headers = document.querySelectorAll('.collapsible-header');
+            headers.forEach(h => h.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const arrow = this.querySelector('.arrow');
+                if (content.classList.contains('open')) { content.classList.remove('open'); arrow.innerHTML='&#9660;'; }
+                else { content.classList.add('open'); arrow.innerHTML='&#9650;'; }
+            }));
+        });
+    </script>
+</body>
+</html>
