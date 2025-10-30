@@ -1,12 +1,12 @@
 """FastAPI application backed by SQLite for Day 3 Challenge 3."""
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Generator, List, Literal, Optional
+from datetime import date
+from typing import Generator, List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, create_engine, func, select
+from sqlalchemy import Date, ForeignKey, String, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 
 DATABASE_URL = "sqlite:///artifacts/onboarding.db"
@@ -16,137 +16,32 @@ class Base(DeclarativeBase):
     """Declarative base for ORM models."""
 
 
-class Company(Base):
-    __tablename__ = "companies"
-
-    company_id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-
-    users: Mapped[list["User"]] = relationship("User", back_populates="company", cascade="all, delete-orphan")
-
-
 class User(Base):
     __tablename__ = "users"
 
-    user_id: Mapped[int] = mapped_column(primary_key=True)
-    company_id: Mapped[int] = mapped_column(ForeignKey("companies.company_id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    password_hash: Mapped[str] = mapped_column(String, nullable=False)
-    first_name: Mapped[str] = mapped_column(String, nullable=False)
-    last_name: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[str] = mapped_column(Enum("Admin", "Hiring Manager", "New Hire"), nullable=False)
-    manager_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    role: Mapped[str] = mapped_column(String, nullable=False)
 
-    company: Mapped["Company"] = relationship("Company", back_populates="users")
-    documents: Mapped[list["Document"]] = relationship("Document", back_populates="uploaded_by", foreign_keys="Document.uploaded_by_user_id")
-    managed_users: Mapped[list["User"]] = relationship("User", back_populates="manager", foreign_keys=[manager_id])
-    manager: Mapped[Optional["User"]] = relationship("User", remote_side=[user_id], back_populates="managed_users")
-    onboarding_plans: Mapped[list["OnboardingPlan"]] = relationship("OnboardingPlan", back_populates="created_by", foreign_keys="OnboardingPlan.created_by_user_id")
-    notifications: Mapped[list["Notification"]] = relationship("Notification", back_populates="user")
-    onboarding_processes: Mapped[list["OnboardingProcess"]] = relationship("OnboardingProcess", back_populates="new_hire", foreign_keys="OnboardingProcess.new_hire_user_id")
-    managed_onboarding_processes: Mapped[list["OnboardingProcess"]] = relationship("OnboardingProcess", back_populates="hiring_manager", foreign_keys="OnboardingProcess.hiring_manager_user_id")
+    tasks: Mapped[List["OnboardingTask"]] = relationship(
+        "OnboardingTask",
+        back_populates="assignee",
+        cascade="all, delete-orphan",
+    )
 
 
-class Document(Base):
-    __tablename__ = "documents"
+class OnboardingTask(Base):
+    __tablename__ = "onboarding_tasks"
 
-    document_id: Mapped[int] = mapped_column(primary_key=True)
-    company_id: Mapped[int] = mapped_column(ForeignKey("companies.company_id", ondelete="CASCADE"), nullable=False)
-    file_name: Mapped[str] = mapped_column(String, nullable=False)
-    file_path: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    file_type: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    uploaded_by_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-
-    company: Mapped["Company"] = relationship("Company")
-    uploaded_by: Mapped[Optional["User"]] = relationship("User", back_populates="documents")
-
-
-class OnboardingPlan(Base):
-    __tablename__ = "onboarding_plans"
-
-    plan_id: Mapped[int] = mapped_column(primary_key=True)
-    company_id: Mapped[int] = mapped_column(ForeignKey("companies.company_id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    created_by_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    due_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String, nullable=False)
+    user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), nullable=True)
 
-    company: Mapped["Company"] = relationship("Company")
-    created_by: Mapped[Optional["User"]] = relationship("User", back_populates="onboarding_plans")
-    tasks: Mapped[list["Task"]] = relationship("Task", back_populates="plan", cascade="all, delete-orphan")
-
-
-class Task(Base):
-    __tablename__ = "tasks"
-
-    task_id: Mapped[int] = mapped_column(primary_key=True)
-    plan_id: Mapped[int] = mapped_column(ForeignKey("onboarding_plans.plan_id", ondelete="CASCADE"), nullable=False)
-    title: Mapped[str] = mapped_column(String, nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    due_days_after_start: Mapped[int] = mapped_column(nullable=False)
-    order_in_plan: Mapped[int] = mapped_column(nullable=False)
-    document_id: Mapped[Optional[int]] = mapped_column(ForeignKey("documents.document_id", ondelete="SET NULL"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-
-    plan: Mapped["OnboardingPlan"] = relationship("OnboardingPlan", back_populates="tasks")
-    document: Mapped[Optional["Document"]] = relationship("Document")
-    assigned_tasks: Mapped[list["AssignedTask"]] = relationship("AssignedTask", back_populates="task", cascade="all, delete-orphan")
-
-
-class OnboardingProcess(Base):
-    __tablename__ = "onboarding_processes"
-
-    process_id: Mapped[int] = mapped_column(primary_key=True)
-    new_hire_user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), unique=True, nullable=False)
-    plan_id: Mapped[int] = mapped_column(ForeignKey("onboarding_plans.plan_id", ondelete="RESTRICT"), nullable=False)
-    hiring_manager_user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id", ondelete="RESTRICT"), nullable=False)
-    start_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    status: Mapped[str] = mapped_column(Enum("Not Started", "In Progress", "Completed"), default="Not Started", nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-
-    new_hire: Mapped["User"] = relationship("User", back_populates="onboarding_processes", foreign_keys=[new_hire_user_id])
-    hiring_manager: Mapped["User"] = relationship("User", back_populates="managed_onboarding_processes", foreign_keys=[hiring_manager_user_id])
-    plan: Mapped["OnboardingPlan"] = relationship("OnboardingPlan")
-    assigned_tasks: Mapped[list["AssignedTask"]] = relationship("AssignedTask", back_populates="process", cascade="all, delete-orphan")
-
-
-class AssignedTask(Base):
-    __tablename__ = "assigned_tasks"
-
-    assigned_task_id: Mapped[int] = mapped_column(primary_key=True)
-    process_id: Mapped[int] = mapped_column(ForeignKey("onboarding_processes.process_id", ondelete="CASCADE"), nullable=False)
-    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.task_id", ondelete="RESTRICT"), nullable=False)
-    status: Mapped[str] = mapped_column(Enum("Pending", "Completed"), default="Pending", nullable=False)
-    due_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-
-    process: Mapped["OnboardingProcess"] = relationship("OnboardingProcess", back_populates="assigned_tasks")
-    task: Mapped["Task"] = relationship("Task", back_populates="assigned_tasks")
-
-
-class Notification(Base):
-    __tablename__ = "notifications"
-
-    notification_id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
-    event_type: Mapped[str] = mapped_column(String, nullable=False)
-    content: Mapped[str] = mapped_column(String, nullable=False)
-    is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
-
-    user: Mapped["User"] = relationship("User", back_populates="notifications")
+    assignee: Mapped[Optional[User]] = relationship("User", back_populates="tasks")
 
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -164,34 +59,53 @@ def get_db() -> Generator[Session, None, None]:
 
 
 class UserBase(BaseModel):
-    company_id: int = Field(..., ge=1)
+    name: str = Field(..., min_length=1)
     email: EmailStr
-    first_name: str = Field(..., min_length=1)
-    last_name: str = Field(..., min_length=1)
-    role: Literal["Admin", "Hiring Manager", "New Hire"]
-    manager_id: Optional[int] = Field(default=None, ge=1)
+    role: str = Field(..., min_length=1)
 
 
 class UserCreate(UserBase):
-    password_hash: str = Field(..., min_length=1)
+    pass
 
 
 class UserUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1)
     email: Optional[EmailStr] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    role: Optional[Literal["Admin", "Hiring Manager", "New Hire"]] = None
-    manager_id: Optional[int] = Field(default=None, ge=1)
-    password_hash: Optional[str] = Field(default=None, min_length=1)
+    role: Optional[str] = Field(default=None, min_length=1)
 
     model_config = ConfigDict(extra="forbid")
 
 
 class UserOut(UserBase):
-    user_id: int
-    password_hash: str
-    created_at: datetime
-    updated_at: datetime
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaskBase(BaseModel):
+    title: str = Field(..., min_length=1)
+    description: Optional[str] = None
+    due_date: Optional[date] = None
+    status: str = Field(..., min_length=1)
+    user_id: Optional[int] = Field(default=None, ge=1)
+
+
+class TaskCreate(TaskBase):
+    pass
+
+
+class TaskUpdate(BaseModel):
+    title: Optional[str] = Field(default=None, min_length=1)
+    description: Optional[str] = None
+    due_date: Optional[date] = None
+    status: Optional[str] = Field(default=None, min_length=1)
+    user_id: Optional[int] = Field(default=None, ge=1)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class TaskOut(TaskBase):
+    id: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -200,26 +114,24 @@ app = FastAPI(title="Onboarding SQLite API")
 
 
 def ensure_email_unique(db: Session, email: str, *, exclude_user_id: Optional[int] = None) -> None:
-    conditions = [User.email == email]
+    query = select(User).where(User.email == email)
     if exclude_user_id is not None:
-        conditions.append(User.user_id != exclude_user_id)
-    existing = db.execute(select(User).where(*conditions)).scalars().first()
+        query = query.where(User.id != exclude_user_id)
+    existing = db.execute(query).scalars().first()
     if existing is not None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
 
-def ensure_manager_valid(db: Session, manager_id: Optional[int], *, for_user_id: Optional[int] = None) -> None:
-    if manager_id is None:
+def ensure_assignee_exists(db: Session, user_id: Optional[int]) -> None:
+    if user_id is None:
         return
-    if for_user_id is not None and manager_id == for_user_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User cannot manage themselves")
-    if db.get(User, manager_id) is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Manager not found")
+    if db.get(User, user_id) is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Assigned user not found")
 
 
 @app.get("/users", response_model=List[UserOut])
 def list_users(db: Session = Depends(get_db)) -> List[UserOut]:
-    users = db.execute(select(User).order_by(User.user_id)).scalars().all()
+    users = db.execute(select(User).order_by(User.id)).scalars().all()
     return [UserOut.model_validate(user) for user in users]
 
 
@@ -234,7 +146,6 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> UserOut:
 @app.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(payload: UserCreate, db: Session = Depends(get_db)) -> UserOut:
     ensure_email_unique(db, payload.email)
-    ensure_manager_valid(db, payload.manager_id)
 
     user = User(**payload.model_dump())
     db.add(user)
@@ -254,9 +165,6 @@ def update_user(user_id: int, payload: UserUpdate, db: Session = Depends(get_db)
     if new_email is not None:
         ensure_email_unique(db, new_email, exclude_user_id=user_id)
 
-    if "manager_id" in update_data:
-        ensure_manager_valid(db, update_data["manager_id"], for_user_id=user_id)
-
     for field, value in update_data.items():
         setattr(user, field, value)
     db.commit()
@@ -270,4 +178,55 @@ def delete_user(user_id: int, db: Session = Depends(get_db)) -> None:
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     db.delete(user)
+    db.commit()
+
+
+@app.get("/tasks", response_model=List[TaskOut])
+def list_tasks(db: Session = Depends(get_db)) -> List[TaskOut]:
+    tasks = db.execute(select(OnboardingTask).order_by(OnboardingTask.id)).scalars().all()
+    return [TaskOut.model_validate(task) for task in tasks]
+
+
+@app.get("/tasks/{task_id}", response_model=TaskOut)
+def get_task(task_id: int, db: Session = Depends(get_db)) -> TaskOut:
+    task = db.get(OnboardingTask, task_id)
+    if task is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    return TaskOut.model_validate(task)
+
+
+@app.post("/tasks", response_model=TaskOut, status_code=status.HTTP_201_CREATED)
+def create_task(payload: TaskCreate, db: Session = Depends(get_db)) -> TaskOut:
+    ensure_assignee_exists(db, payload.user_id)
+
+    task = OnboardingTask(**payload.model_dump())
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+    return TaskOut.model_validate(task)
+
+
+@app.put("/tasks/{task_id}", response_model=TaskOut)
+def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)) -> TaskOut:
+    task = db.get(OnboardingTask, task_id)
+    if task is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
+    update_data = payload.model_dump(exclude_unset=True)
+    if "user_id" in update_data:
+        ensure_assignee_exists(db, update_data["user_id"])
+
+    for field, value in update_data.items():
+        setattr(task, field, value)
+    db.commit()
+    db.refresh(task)
+    return TaskOut.model_validate(task)
+
+
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task(task_id: int, db: Session = Depends(get_db)) -> None:
+    task = db.get(OnboardingTask, task_id)
+    if task is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    db.delete(task)
     db.commit()
