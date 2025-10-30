@@ -380,20 +380,27 @@ async def async_get_image_generation_completion_compat(
 
 
 def clean_llm_output(output_str: str, language: str = "json") -> str:
-    """Cleans markdown code fences from LLM output."""
-    if "```" in output_str:
-        pattern = re.compile(
-            r"```(?:" + re.escape(language) + r")?\s*\n(.*?)\n```",
-            re.DOTALL | re.IGNORECASE,
-        )
-        match = pattern.search(output_str)
-        if match:
-            return match.group(1).strip()
-        parts = output_str.split("```")
-        if len(parts) >= 3:
-            return parts[1].strip()
-        return output_str.strip()
-    return output_str.strip()
+    """Return LLM output stripped of outer markdown fences without touching inner content."""
+
+    if not output_str:
+        return output_str
+
+    text = output_str.strip()
+    if "```" not in text:
+        return text
+
+    lines = text.splitlines()
+    if not lines:
+        return text
+
+    first_line = lines[0].strip()
+    fence_tags = {"```", f"```{language.lower()}", f"```{language}"}
+    if first_line.lower() in {tag.lower() for tag in fence_tags}:
+        last_line = lines[-1].strip()
+        if last_line == "```":
+            return "\n".join(lines[1:-1]).strip()
+
+    return text
 
 
 def prompt_enhancer(
