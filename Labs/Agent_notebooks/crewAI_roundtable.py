@@ -245,7 +245,22 @@ app = FastAPI(title="OnboardPro Agent Roundtable API")
 
 @app.post("/agent-chat")
 async def agent_chat(request: Request):
-    payload = await request.json()
+    try:
+        raw_body = await request.body()
+    except Exception as exc:  # pragma: no cover - transport edge case
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    if not raw_body.strip():
+        payload: Dict[str, Any] = {}
+    else:
+        try:
+            payload = json.loads(raw_body)
+        except json.JSONDecodeError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Request body must be valid JSON.",
+            ) from exc
+
     meeting_question = payload.get("question") or DEFAULT_MEETING_QUESTION
 
     try:
