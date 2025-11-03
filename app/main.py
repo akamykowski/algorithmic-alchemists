@@ -1,15 +1,32 @@
 """FastAPI application backed by SQLite for Day 3 Challenge 3."""
 from __future__ import annotations
 
+import os
+import subprocess
+import sys
 from datetime import date
+from pathlib import Path
 from typing import Generator, List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from sqlalchemy import Date, ForeignKey, String, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 
-DATABASE_URL = "sqlite:///artifacts/onboarding.db"
+APP_ROOT = Path(__file__).resolve().parent.parent
+
+_db_path_env = os.getenv("DATABASE_PATH")
+if _db_path_env:
+    candidate_path = Path(_db_path_env)
+    if not candidate_path.is_absolute():
+        candidate_path = APP_ROOT / candidate_path
+else:
+    candidate_path = APP_ROOT / "artifacts" / "onboarding.db"
+
+candidate_path.parent.mkdir(parents=True, exist_ok=True)
+DATABASE_PATH = candidate_path
+DATABASE_URL = f"sqlite:///{DATABASE_PATH.as_posix()}"
 
 
 class Base(DeclarativeBase):
@@ -111,6 +128,70 @@ class TaskOut(TaskBase):
 
 
 app = FastAPI(title="Onboarding SQLite API")
+
+
+def streamlit_enabled() -> bool:
+    """Return True when the Streamlit UI should be launched."""
+
+    return os.getenv("ENABLE_STREAMLIT_UI", "0") == "1"
+
+
+_STREAMLIT_PROCESS: Optional[subprocess.Popen[str]] = None
+
+
+@app.on_event("startup")
+def launch_streamlit_ui() -> None:
+    """Optionally launch the Streamlit HR dashboard in a background process."""
+
+    if not streamlit_enabled():
+        return
+
+    global _STREAMLIT_PROCESS
+    if _STREAMLIT_PROCESS and _STREAMLIT_PROCESS.poll() is None:
+        return
+
+    script_path = Path(__file__).resolve().parent.parent / "frontend" / "hr_dashboard.py"
+    if not script_path.exists():
+        return
+
+    port = os.getenv("STREAMLIT_PORT", "8501")
+    address = os.getenv("STREAMLIT_ADDRESS", "127.0.0.1")
+    command = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(script_path),
+        "--server.port",
+        str(port),
+        "--server.address",
+        address,
+        "--server.headless",
+        "true",
+    ]
+
+    try:
+        _STREAMLIT_PROCESS = subprocess.Popen(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except OSError:
+        _STREAMLIT_PROCESS = None
+
+
+@app.on_event("shutdown")
+def shutdown_streamlit_ui() -> None:
+    """Terminate the Streamlit process when the API shuts down."""
+
+    global _STREAMLIT_PROCESS
+    if _STREAMLIT_PROCESS and _STREAMLIT_PROCESS.poll() is None:
+        _STREAMLIT_PROCESS.terminate()
+        try:
+            _STREAMLIT_PROCESS.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            _STREAMLIT_PROCESS.kill()
+    _STREAMLIT_PROCESS = None
 
 
 def ensure_email_unique(db: Session, email: str, *, exclude_user_id: Optional[int] = None) -> None:
@@ -230,3 +311,35 @@ def delete_task(task_id: int, db: Session = Depends(get_db)) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     db.delete(task)
     db.commit()
+
+
+@app.get("/hr-dashboard", response_class=HTMLResponse)
+def hr_dashboard_portal() -> HTMLResponse:
+    """Serve an embedded frame that displays the Streamlit HR dashboard."""
+
+    if not streamlit_enabled():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Streamlit UI is disabled. Set ENABLE_STREAMLIT_UI=1 to enable the dashboard.",
+        )
+
+    port = os.getenv("STREAMLIT_PORT", "8501")
+    address = os.getenv("STREAMLIT_PUBLIC_ADDRESS", os.getenv("STREAMLIT_ADDRESS", "127.0.0.1"))
+    iframe_url = f"http://{address}:{port}"
+    html = f"""
+    <!DOCTYPE html>
+    <html lang=\"en\">
+        <head>
+            <meta charset=\"utf-8\" />
+            <title>OnboardPro HR Dashboard</title>
+            <style>
+                html, body {{ margin: 0; height: 100%; }}
+                iframe {{ border: 0; width: 100%; height: 100%; }}
+            </style>
+        </head>
+        <body>
+            <iframe src=\"{iframe_url}\" title=\"OnboardPro HR Dashboard\"></iframe>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=html)
