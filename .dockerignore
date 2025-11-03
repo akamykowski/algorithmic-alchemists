@@ -1,0 +1,21 @@
+.git
+.gitignore
+.dockerignore
+.env
+.env.*
+.venv
+__pycache__/
+*.py[cod]
+*.swp
+*.tmp
+*.log
+*.sqlite
+.pytest_cache/
+artifacts/
+async_tests/
+Labs/
+slides/
+Solutions/
+Supporting Materials/
+Daily agenda.ipynb
+copilot-docs_2025-10-29.html
