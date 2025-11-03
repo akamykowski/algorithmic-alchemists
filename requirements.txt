@@ -3,3 +3,7 @@ pydantic
 pytest
 sqlalchemy
 uvicorn[standard]
+requests
+streamlit
+pandas
+email-validator
