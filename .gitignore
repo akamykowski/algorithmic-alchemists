@@ -65,3 +65,6 @@ index.html
 # Type checker and linter caches
 .mypy_cache/
 .ruff_cache/
+
+node_modules/
+package-lock.json
